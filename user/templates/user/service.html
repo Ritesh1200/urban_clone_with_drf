@@ -1,0 +1,54 @@
+{% extends 'user/base.html' %}
+{% block content %}
+{% load static %}
+
+<h2 class = " d-flex justify-content-center align-items-center">  {{cat}}   <h2>
+
+<div class = "d-flex justify-content-center align-items-center">
+{% if categorypk %}
+    <button type="button" class="btn btn-primary "> <a href = "{% url 'add_emp' servicepk=servicepk categorypk=categorypk %}" style = "text-decoration: none; color:white" >Add as employee</a> </button>
+{% else %}
+    <button type="button" class="btn btn-primary "> <a href = "{% url 'add_emp' servicepk=servicepk %}" style = "text-decoration: none; color:white" >Add as employee</a> </button>
+{% endif %}
+</div>
+<br>
+{% if emp_present == 0 %}
+    <h2>No employee available</h2>
+
+{% else %}
+
+            <div class="card-group">
+                {% for employee in employees %}
+                <div class="col" >
+                    <div class="card" style="width: 20rem; background-color:#dee2e6;">
+                        
+                        <img class="card-img-top" style="margin-left: auto;margin-right: auto; width:10vw; height: 20vh"src = "{% static employee.image %}" style="width: 20%; height:10vw;" alt="Card image cap">    
+                        
+                        <div class="card-body">
+                            <h4> Name : {{employee.name}}</h4>
+                            <h4> Price : {{employee.cost}} Rs.</h4>
+                            <h4> Rating : {{employee.rating}} / 5</h4>
+                            <h4> Description : {{employee.description}}</h4>
+                            <h4> Address : {{employee.address}}</h4>
+                            {% if employee.gotocart %}
+                                <button type="button" class="btn btn-primary"> <a href = "{% url 'cart'%}" style = "text-decoration: none; color:white" >Go to cart</a> </button>
+                            {% else %}
+                                {% if categorypk %}
+                                    <button type="button" class="btn btn-primary"> <a href = "{% url 'addcart' emp_pk=employee.id servicepk=servicepk categorypk=categorypk %}" style = "text-decoration: none; color:white" >Add to cart</a> </button>
+                                {% else %}
+                                    <button type="button" class="btn btn-primary"> <a href = "{% url 'addcart' emp_pk=employee.id servicepk=servicepk %}" style = "text-decoration: none; color:white" >Add to cart</a> </button>
+                                {% endif %}
+                            {%endif%}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+{% endif %}
+
+
+
+  
+
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'user/base.html' %}
+{% block content %}
+
+<html>
+    <head>
+        <style>
+            .center_div{
+                margin: 0 auto;
+                width:50% /* value of your choice which suits your alignment */
+            }
+        </style>
+    </head>
+    <body>
+        <br>
+        <div class="container center_div">
+        <form method = "post">
+        
+            {% csrf_token %}
+            <div class="form-group " >
+                
+                <h1>Email sended Succesfully to ({{email}}) if you did not received.</h1>
+                <input type = 'hidden' value = {{email}} name = 'email'>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-primary">Resend</button>
+        </form>
+
+    </div>
+
+    </body>
+
+</html>
+{% endblock %}
