@@ -4,20 +4,17 @@ from user.models import Profile
 from django.contrib.auth.decorators import login_required
 
 from ..serializers import ProfileSerializer, UserSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 
 class Userprofile(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self , request):
-        if request.user.is_authenticated:
-            user_obj = request.user
-            profile_obj = Profile.objects.filter(user = user_obj).first()
-            if profile_obj is None:
-                return Response({"error":"Please not login with admin account"}, status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"error":"Please login"}, status.HTTP_400_BAD_REQUEST)
 
         user_obj = request.user
         serializer = UserSerializer(user_obj )

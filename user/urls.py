@@ -11,11 +11,11 @@ from user.view.service import Service
 from user.view.cart import Addcart
 from user.view.cart import Cart
 from user.view.order import Order
+from user.view.order import Add_order
 from user.view.cart import Remove
 from user.view.employee import Add_emp
-from user.view.checkout import checkout
 from user.view.profile import Userprofile
-from user.view.update import update
+from user.view.update import Update
 
 urlpatterns = [
     path('' , views.Home.as_view() , name = 'user'),
@@ -31,12 +31,11 @@ urlpatterns = [
     path('addcart/<int:emp_pk>' , Addcart.as_view() , name = 'addcart'),
     path('cart' , Cart.as_view() , name = 'cart'),
     path('order' , Order.as_view() , name = 'order'),
+    path('Add_order/<int:cart_pk>' , Add_order.as_view() , name = 'add_order'),
     path('remove/<int:order_pk>' , Remove.as_view() , name = 'remove'),
     path('add_emp/<int:servicepk>/<int:categorypk>' , Add_emp.as_view() , name = 'add_emp'),
     path('add_emp/<int:servicepk>' , Add_emp.as_view() , name = 'add_emp'),
-    path('checkout/<int:order_pk>' , checkout , name = 'checkout'),
-    path('checkout/<int:order_pk>/<int:user_pk>' , checkout , name = 'checkout'),
     path('profile' , Userprofile.as_view() , name = 'profile'),
-    path('update' , update , name = 'update'),
+    path('update' , Update.as_view() , name = 'update'),
     
 ]

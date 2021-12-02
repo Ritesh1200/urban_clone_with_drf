@@ -1,6 +1,8 @@
 from django.shortcuts import render , redirect
 from django.contrib.auth.models import User , auth
 from django.contrib import messages
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from user.models import Profile , Services , Categorys , Employee , Choose 
 from django.contrib.auth.decorators import login_required
 import random
@@ -8,22 +10,16 @@ from rest_framework import status
 from rest_framework.response import Response
 from ..serializers import CategorySerializer, EmployeeSerializer
 from rest_framework.views import APIView
-
+from django.views.decorators.csrf import csrf_exempt
 from user import serializers
 
 
 #  Add_employee page
 
 class Add_emp(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def post(self , request , servicepk , categorypk = None ):
-        if request.user.is_authenticated:
-            user_obj = request.user
-            profile_obj = Profile.objects.filter(user = user_obj).first()
-            if profile_obj is None:
-                return Response({"error":"Please not login with admin account"}, status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"error":"Please login "}, status.HTTP_400_BAD_REQUEST)
-        
         cost = request.data.get('cost')
         description = request.data.get('description')
         address = request.data.get('address')
@@ -78,7 +74,8 @@ class Add_emp(APIView):
         if not empserializer.is_valid():
             return Response(empserializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response({"status":"Employee added"}, status=status.HTTP_200_OK)
+        empserializer.save()
+        return Response(empserializer.data, status=status.HTTP_200_OK)
 
 # @login_required(login_url='/login')
 # def add_emp(req , servicepk , categorypk = None):

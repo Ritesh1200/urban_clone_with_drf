@@ -7,9 +7,11 @@ from ..serializers import ProfileSerializer, UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
 
 
-class Login(APIView):
+class Login(ObtainAuthToken):
     def post(self , request):
         if request.user.is_authenticated:
             user_obj = request.user
@@ -47,9 +49,13 @@ class Login(APIView):
         user = auth.authenticate(username = username , password = password)
         if user is not None:
             
-            # user loged in
-            auth.login(request , user)
-            return Response({"status":"user login successfully"}, status=status.HTTP_200_OK)
+        #     # user loged in
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                "username": user.username,
+                "password": request.data.get("password"),
+                "token" : token.key
+            }, status=status.HTTP_200_OK)
         else:
             return Response({"error":"invalid cridenctial"}, status.HTTP_400_BAD_REQUEST)
 

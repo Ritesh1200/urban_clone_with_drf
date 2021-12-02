@@ -1,6 +1,8 @@
 from django.shortcuts import render , redirect
 from django.contrib.auth.models import User , auth
 from django.contrib import messages
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from user.models import Profile , Services , Categorys , Employee , Choose 
 from datetime import datetime
@@ -12,26 +14,45 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from user import serializers
 
 class Order(APIView):
-    def get(self , request ):
-        if request.user.is_authenticated:
-            user_obj = request.user
-            profile_obj = Profile.objects.filter(user = user_obj).first()
-            if profile_obj is None:
-                return Response({"error":"Please not login with admin account"}, status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"error":"Please login"}, status.HTTP_400_BAD_REQUEST)
-
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self , request , cart_pk = None):
         user_obj = request.user
 
         # getting order list of user
-        choose_obj = Choose.objects.filter(user_id = user_obj.id , cart = False ).all().order_by("-order_date")
-        serializer = ChooseSerializer(choose_obj , many = True)
+        if cart_pk is None:
+            choose_obj = Choose.objects.filter(user_id = user_obj.id , cart = False ).all().order_by("-order_date")
+            serializer = ChooseSerializer(choose_obj , many = True)
 
-        return Response(serializer.data)
+            return Response(serializer.data , status=status.HTTP_200_OK)
+        
+        else:
+            choose_obj = Choose.objects.filter(id = cart_pk).first()
+            data = {
+                "cart":False
+            }
+            serializer = ChooseSerializer(choose_obj ,data = data ,  partial = True)
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
+            return Response(serializer.data , status=status.HTTP_200_OK)
 
+class Add_order(APIView):
+    
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self , request , cart_pk):
+            choose_obj = Choose.objects.filter(id = cart_pk).first()
+            data = {
+                "cart":False
+            }
+            serializer = ChooseSerializer(choose_obj ,data = data ,  partial = True)
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
+            return Response(serializer.data , status=status.HTTP_200_OK)
 
 
 # @login_required(login_url='/login')

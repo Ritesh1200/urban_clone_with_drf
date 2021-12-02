@@ -1,6 +1,8 @@
 from django.shortcuts import render , redirect
 from django.contrib.auth.models import User , auth
 from django.contrib import messages
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated 
 from rest_framework.serializers import Serializer
 from rest_framework.views import APIView
 from user.models import Profile , Services , Categorys , Employee , Choose 
@@ -15,15 +17,9 @@ from rest_framework.views import APIView
 
 
 class Cart(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self , request):
-        if request.user.is_authenticated:
-            user_obj = request.user
-            profile_obj = Profile.objects.filter(user = user_obj).first()
-            if profile_obj is None:
-                return Response({"error":"Please not login with admin account"}, status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"error":"Please login "}, status.HTTP_400_BAD_REQUEST)
-        
         user_obj = request.user
 
         #it take all objects of from choose table which has same user_id 
@@ -34,15 +30,10 @@ class Cart(APIView):
 
 
 class Addcart(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self , request , emp_pk ):
-        if request.user.is_authenticated:
-            user_obj = request.user
-            profile_obj = Profile.objects.filter(user = user_obj).first()
-            if profile_obj is None:
-                return Response({"error":"Please not login with admin account"}, status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"error":"Please login "}, status.HTTP_400_BAD_REQUEST)
-        
+
         user_obj = request.user
         profile_obj = Profile.objects.filter(user = user_obj).first()
         address = profile_obj.address
@@ -62,15 +53,9 @@ class Addcart(APIView):
 
 
 class Remove(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self , request, order_pk):
-        if request.user.is_authenticated:
-            user_obj = request.user
-            profile_obj = Profile.objects.filter(user = user_obj).first()
-            if profile_obj is None:
-                return Response({"error":"Please not login with admin account"}, status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"error":"Please login "}, status.HTTP_400_BAD_REQUEST)
-
 
         choose_obj = Choose.objects.filter(pk = order_pk ).first()
         if choose_obj is None:
